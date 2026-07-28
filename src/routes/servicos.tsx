@@ -57,16 +57,10 @@ function Servicos() {
   const salvarServicos = async (novos) => {
     setSalvando(true)
     await storageSupabase.set('servicos', novos)
-    // Atualiza a tela direto com os dados que acabamos de mandar salvar,
-    // em vez de buscar tudo de novo do banco (evita uma 3ª ida e volta
-    // pela internet, deixando o cadastro/edição mais rápido).
     setServicos(novos)
     setSalvando(false)
   }
 
-  // Cancela (sem apagar) todos os agendamentos ainda ativos vinculados
-  // a um serviço específico. Usado quando o serviço é excluído, para que
-  // nenhum horário fique "preso" a um serviço que não existe mais.
   const cancelarAgendamentosDoServico = async (servicoId: string) => {
     const agendamentos = await storageSupabase.get('agendamentos', [])
     const atualizados = agendamentos.map(a =>
@@ -124,8 +118,6 @@ function Servicos() {
     if (current.includes(hora)) {
       setForm({ ...form, horarios: current.filter(h => h !== hora) })
     } else {
-      // .sort() aqui garante que os horários fiquem sempre em ordem
-      // cronológica, não na ordem em que foram clicados.
       const atualizados = [...current, hora].sort()
       setForm({ ...form, horarios: atualizados })
     }
@@ -151,22 +143,22 @@ function Servicos() {
   }
 
   if (carregando) {
-    return <div className="p-6 text-gray-500">Carregando...</div>
+    return <div className="p-6 text-stone-500">Carregando...</div>
   }
 
   return (
     <div className="p-6 max-w-6xl mx-auto">
-      <Link to="/" className="inline-flex items-center gap-2 text-pink-600 hover:text-pink-800 mb-4 transition">
+      <Link to="/" className="inline-flex items-center gap-2 text-stone-700 hover:text-stone-900 mb-4 transition">
         <ArrowLeft className="w-4 h-4" />
         Voltar ao Dashboard
       </Link>
 
-      <h1 className="text-2xl font-bold text-pink-600 flex items-center gap-2">
+      <h1 className="text-2xl font-bold text-stone-700 flex items-center gap-2">
         <img src="/vite.svg" alt="" className="w-6 h-6" />
         Gerenciar Serviços
       </h1>
 
-      <form onSubmit={handleSubmit} className="bg-white p-6 rounded-xl shadow-md mt-6 border border-pink-100">
+      <form onSubmit={handleSubmit} className="bg-white p-6 rounded-xl shadow-md mt-6 border border-stone-200">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
             <label className="block text-sm font-medium">Nome do serviço</label>
@@ -213,7 +205,7 @@ function Servicos() {
             <label className="block text-sm font-medium">Imagem do serviço</label>
             <div className="flex flex-col gap-2">
               <div className="flex items-center gap-2">
-                <Link2 className="size-4 text-muted-foreground" />
+                <Link2 className="size-4 text-stone-500" />
                 <input
                   type="text"
                   value={form.imagem?.startsWith('data:') ? '' : form.imagem || ''}
@@ -226,11 +218,11 @@ function Servicos() {
                 />
               </div>
               <div className="flex items-center gap-2">
-                <Upload className="size-4 text-muted-foreground" />
+                <Upload className="size-4 text-stone-500" />
                 <button
                   type="button"
                   onClick={() => fileInputRef.current?.click()}
-                  className="inline-flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition text-sm"
+                  className="inline-flex items-center gap-2 px-4 py-2 border border-stone-300 rounded-lg hover:bg-stone-50 transition text-sm"
                 >
                   Escolher arquivo
                 </button>
@@ -285,7 +277,7 @@ function Servicos() {
                   type="button"
                   onClick={() => toggleDia(dia)}
                   className={`px-3 py-1 rounded-full text-sm ${
-                    form.diasSemana.includes(dia) ? 'bg-pink-500 text-white' : 'bg-gray-200 text-gray-700'
+                    form.diasSemana.includes(dia) ? 'bg-stone-700 text-white' : 'bg-stone-200 text-stone-700'
                   }`}
                 >
                   {dia}
@@ -302,7 +294,7 @@ function Servicos() {
                   type="button"
                   onClick={() => toggleHorario(hora)}
                   className={`px-3 py-1 rounded-full text-sm ${
-                    form.horarios.includes(hora) ? 'bg-blue-500 text-white' : 'bg-gray-200 text-gray-700'
+                    form.horarios.includes(hora) ? 'bg-stone-600 text-white' : 'bg-stone-200 text-stone-700'
                   }`}
                 >
                   {hora}
@@ -315,12 +307,12 @@ function Servicos() {
           <button
             type="submit"
             disabled={salvando}
-            className="bg-pink-500 text-white px-6 py-2 rounded-lg hover:bg-pink-600 transition disabled:opacity-50"
+            className="bg-stone-700 text-white px-6 py-2 rounded-lg hover:bg-stone-800 transition disabled:opacity-50"
           >
             {salvando ? 'Salvando...' : editando ? 'Atualizar' : 'Cadastrar'}
           </button>
           {editando && (
-            <button type="button" onClick={() => { setEditando(null); setForm({ nome: '', descricao: '', preco: '', duracao: '60', imagem: '', categoria: '', diasSemana: [], horarios: [] }); setPreviewImagem('') }} className="bg-gray-300 px-6 py-2 rounded-lg">
+            <button type="button" onClick={() => { setEditando(null); setForm({ nome: '', descricao: '', preco: '', duracao: '60', imagem: '', categoria: '', diasSemana: [], horarios: [] }); setPreviewImagem('') }} className="bg-stone-300 px-6 py-2 rounded-lg">
               Cancelar
             </button>
           )}
@@ -329,7 +321,7 @@ function Servicos() {
 
       <div className="mt-8 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {servicos.map(servico => (
-          <div key={servico.id} className="bg-white p-4 rounded-xl shadow-md border border-pink-100">
+          <div key={servico.id} className="bg-white p-4 rounded-xl shadow-md border border-stone-200">
             {servico.imagem && (
               <img
                 src={servico.imagem}
@@ -342,14 +334,14 @@ function Servicos() {
               />
             )}
             <h3 className="font-bold text-lg mt-2">{servico.nome}</h3>
-            <p className="text-sm text-gray-600">{servico.descricao}</p>
-            <p className="text-pink-600 font-bold">R$ {servico.preco}</p>
+            <p className="text-sm text-stone-600">{servico.descricao}</p>
+            <p className="text-stone-700 font-bold">R$ {servico.preco}</p>
             <p className="text-sm">Duração: {servico.duracao} min</p>
-            <p className="text-sm text-gray-500">Dias: {servico.diasSemana?.join(', ') || 'Não definido'}</p>
-            <p className="text-sm text-gray-500">Horários: {servico.horarios?.join(', ') || 'Não definido'}</p>
+            <p className="text-sm text-stone-500">Dias: {servico.diasSemana?.join(', ') || 'Não definido'}</p>
+            <p className="text-sm text-stone-500">Horários: {servico.horarios?.join(', ') || 'Não definido'}</p>
             <div className="flex gap-2 mt-3">
-              <button onClick={() => handleEdit(servico)} className="bg-blue-500 text-white px-3 py-1 rounded-lg text-sm">Editar</button>
-              <button onClick={() => handleDelete(servico.id)} className="bg-red-500 text-white px-3 py-1 rounded-lg text-sm">Remover</button>
+              <button onClick={() => handleEdit(servico)} className="bg-stone-600 text-white px-3 py-1 rounded-lg text-sm hover:bg-stone-700 transition">Editar</button>
+              <button onClick={() => handleDelete(servico.id)} className="bg-stone-500 text-white px-3 py-1 rounded-lg text-sm hover:bg-stone-600 transition">Remover</button>
             </div>
           </div>
         ))}

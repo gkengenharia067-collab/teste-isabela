@@ -22,8 +22,6 @@ const IMAGEM_INDISPONIVEL =
     </svg>`
   )
 
-// Normaliza o nome do dia da semana vindo do date-fns (ex: "segunda-feira")
-// para o mesmo formato salvo no cadastro do serviço (ex: "Segunda").
 function normalizarDia(diaSemana: string) {
   return diaSemana
     .normalize('NFD')
@@ -114,8 +112,6 @@ function DetalhesServico() {
 
     const updated = [...agendamentos, novoAgendamento]
     await storageSupabase.set('agendamentos', updated)
-    // Atualiza a tela direto com os dados que acabamos de salvar, sem
-    // buscar tudo de novo (evita uma ida e volta desnecessária pela internet).
     setAgendamentos(updated)
 
     const mensagem = `Olá! Gostaria de confirmar meu agendamento:\n\n*Serviço:* ${servico.nome}\n*Data:* ${format(dataSelecionada, 'dd/MM/yyyy')}\n*Horário:* ${horarioSelecionado}\n*Cliente:* ${clienteNome}\n*Telefone:* ${clienteTelefone}\n\nAguardando confirmação.`
@@ -130,7 +126,7 @@ function DetalhesServico() {
   }
 
   if (carregando) {
-    return <div className="p-6 text-gray-500">Carregando...</div>
+    return <div className="p-6 text-stone-500">Carregando...</div>
   }
 
   if (!servico) return <div className="p-6">Serviço não encontrado.</div>
@@ -145,7 +141,7 @@ function DetalhesServico() {
 
   return (
     <div className="p-6 max-w-4xl mx-auto">
-      <div className="bg-white rounded-xl shadow-lg overflow-hidden border border-pink-100">
+      <div className="bg-white rounded-xl shadow-lg overflow-hidden border border-stone-200">
         {servico.imagem && (
           <img
             src={servico.imagem}
@@ -158,13 +154,13 @@ function DetalhesServico() {
           />
         )}
         <div className="p-6">
-          <h1 className="text-3xl font-bold text-pink-600">{servico.nome}</h1>
-          <p className="text-gray-600 mt-2">{servico.descricao}</p>
+          <h1 className="text-3xl font-bold text-stone-700">{servico.nome}</h1>
+          <p className="text-stone-600 mt-2">{servico.descricao}</p>
           <div className="flex gap-4 mt-3">
-            <span className="bg-pink-100 text-pink-700 px-3 py-1 rounded-full text-sm">R$ {servico.preco}</span>
-            <span className="bg-blue-100 text-blue-700 px-3 py-1 rounded-full text-sm">{servico.duracao} min</span>
+            <span className="bg-stone-100 text-stone-700 px-3 py-1 rounded-full text-sm">R$ {servico.preco}</span>
+            <span className="bg-stone-100 text-stone-700 px-3 py-1 rounded-full text-sm">{servico.duracao} min</span>
           </div>
-          <p className="text-sm text-gray-500 mt-2">Disponível: {servico.diasSemana.join(', ')}</p>
+          <p className="text-sm text-stone-500 mt-2">Disponível: {servico.diasSemana.join(', ')}</p>
         </div>
       </div>
 
@@ -178,10 +174,10 @@ function DetalhesServico() {
             value={dataSelecionada}
             tileDisabled={tileDisabled}
             locale="pt-BR"
-            className="mt-2 rounded-lg shadow border border-pink-200"
+            className="mt-2 rounded-lg shadow border border-stone-200"
             minDate={new Date()}
           />
-          <p className="text-sm text-gray-500 mt-2">
+          <p className="text-sm text-stone-500 mt-2">
             Dias destacados estão disponíveis. Dias cinza não atendemos.
           </p>
         </div>
@@ -189,13 +185,13 @@ function DetalhesServico() {
         <div>
           <h2 className="text-xl font-bold flex items-center gap-2">
             <Clock className="w-5 h-5" /> Horários disponíveis
-            <span className="text-sm font-normal text-gray-500">
+            <span className="text-sm font-normal text-stone-500">
               ({format(dataSelecionada, 'dd/MM/yyyy')})
             </span>
           </h2>
 
           {horariosDisponiveis.length === 0 ? (
-            <p className="text-gray-500 mt-2">Nenhum horário disponível para esta data.</p>
+            <p className="text-stone-500 mt-2">Nenhum horário disponível para esta data.</p>
           ) : (
             <div className="grid grid-cols-3 gap-2 mt-2">
               {horariosDisponiveis.map(h => (
@@ -204,8 +200,8 @@ function DetalhesServico() {
                   onClick={() => setHorarioSelecionado(h)}
                   className={`py-2 px-3 rounded-lg border ${
                     horarioSelecionado === h
-                      ? 'bg-pink-500 text-white border-pink-500'
-                      : 'bg-white border-gray-300 hover:bg-pink-50'
+                      ? 'bg-stone-700 text-white border-stone-700'
+                      : 'bg-white border-stone-300 hover:bg-stone-50'
                   }`}
                 >
                   {h}
@@ -215,11 +211,11 @@ function DetalhesServico() {
           )}
 
           {horarioSelecionado && (
-            <div className="mt-6 bg-pink-50 p-4 rounded-xl border border-pink-200">
+            <div className="mt-6 bg-stone-50 p-4 rounded-xl border border-stone-200">
               <p className="font-semibold">Horário selecionado: {horarioSelecionado}</p>
               <div className="mt-3 space-y-3">
                 <div className="flex items-center gap-2">
-                  <User className="w-4 h-4 text-pink-600" />
+                  <User className="w-4 h-4 text-stone-600" />
                   <input
                     type="text"
                     placeholder="Seu nome"
@@ -229,7 +225,7 @@ function DetalhesServico() {
                   />
                 </div>
                 <div className="flex items-center gap-2">
-                  <Phone className="w-4 h-4 text-pink-600" />
+                  <Phone className="w-4 h-4 text-stone-600" />
                   <input
                     type="tel"
                     inputMode="numeric"
@@ -242,7 +238,7 @@ function DetalhesServico() {
                 <button
                   onClick={handleAgendar}
                   disabled={agendando}
-                  className="w-full bg-pink-500 text-white py-3 rounded-lg hover:bg-pink-600 transition flex items-center justify-center gap-2 disabled:opacity-50"
+                  className="w-full bg-stone-700 text-white py-3 rounded-lg hover:bg-stone-800 transition flex items-center justify-center gap-2 disabled:opacity-50"
                 >
                   <Sparkles className="w-5 h-5" />
                   {agendando ? 'Agendando...' : 'Agendar e enviar WhatsApp'}
@@ -254,7 +250,7 @@ function DetalhesServico() {
       </div>
 
       <div className="mt-8">
-        <Link to="/catalogo" className="text-pink-500 hover:underline">← Voltar ao catálogo</Link>
+        <Link to="/catalogo" className="text-stone-700 hover:underline">← Voltar ao catálogo</Link>
       </div>
     </div>
   )

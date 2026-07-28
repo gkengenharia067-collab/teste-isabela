@@ -6,8 +6,6 @@ import { storageSupabase } from '../services/storage.supabase.service'
 import { RequireAuth } from '../components/RequireAuth'
 
 export const Route = createFileRoute('/agendamentos')({
-  // Permite abrir a página já num filtro específico via URL,
-  // ex: /agendamentos?filtro=hoje (usado pelo card do dashboard).
   validateSearch: (search: Record<string, unknown>) => ({
     filtro: (search.filtro as string) || 'todos',
   }),
@@ -61,8 +59,6 @@ function Agendamentos() {
     setAgendamentos(atualizados)
   }
 
-  // Limpeza única: cancela agendamentos antigos que ficaram "órfãos"
-  // (vinculados a um serviço que já não existe mais).
   const handleLimparOrfaos = async () => {
     const idsServicosExistentes = servicos.map(s => s.id)
     const orfaos = agendamentos.filter(
@@ -89,12 +85,9 @@ function Agendamentos() {
   }
 
   if (carregando) {
-    return <div className="p-6 text-gray-500">Carregando...</div>
+    return <div className="p-6 text-stone-500">Carregando...</div>
   }
 
-  // Usa a data local (não UTC) para "hoje" bater com a data que o
-  // calendário de agendamento também usa (evita contagem/filtro errado
-  // perto da meia-noite, quando UTC e horário local já são dias diferentes).
   const hojeStr = format(new Date(), 'yyyy-MM-dd')
 
   const listaFiltrada = agendamentos
@@ -107,19 +100,19 @@ function Agendamentos() {
 
   return (
     <div className="p-6 max-w-5xl mx-auto">
-      <Link to="/" className="inline-flex items-center gap-2 text-pink-600 hover:text-pink-800 mb-4 transition">
+      <Link to="/" className="inline-flex items-center gap-2 text-stone-700 hover:text-stone-900 mb-4 transition">
         <ArrowLeft className="w-4 h-4" />
         Voltar ao Dashboard
       </Link>
 
       <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
-        <h1 className="text-2xl font-bold text-pink-600 flex items-center gap-2">
+        <h1 className="text-2xl font-bold text-stone-700 flex items-center gap-2">
           <CalendarDays className="w-6 h-6" />
           Agendamentos
         </h1>
         <button
           onClick={handleLimparOrfaos}
-          className="inline-flex items-center gap-2 bg-purple-500 text-white px-4 py-2 rounded-lg hover:bg-purple-600 transition text-sm self-start md:self-auto"
+          className="inline-flex items-center gap-2 bg-stone-600 text-white px-4 py-2 rounded-lg hover:bg-stone-700 transition text-sm self-start md:self-auto"
         >
           <Wand2 className="w-4 h-4" />
           Limpar agendamentos órfãos
@@ -136,7 +129,7 @@ function Agendamentos() {
             key={f.key}
             onClick={() => setFiltro(f.key)}
             className={`px-4 py-2 rounded-lg text-sm ${
-              filtro === f.key ? 'bg-pink-500 text-white' : 'bg-gray-200 text-gray-700'
+              filtro === f.key ? 'bg-stone-700 text-white' : 'bg-stone-200 text-stone-700'
             }`}
           >
             {f.label}
@@ -145,33 +138,33 @@ function Agendamentos() {
       </div>
 
       {listaFiltrada.length === 0 ? (
-        <p className="text-gray-500">Nenhum agendamento encontrado.</p>
+        <p className="text-stone-500">Nenhum agendamento encontrado.</p>
       ) : (
         <div className="space-y-3">
           {listaFiltrada.map(a => (
             <div
               key={a.id}
               className={`bg-white p-4 rounded-xl shadow-md border flex flex-col md:flex-row md:items-center md:justify-between gap-3 ${
-                a.status === 'cancelado' ? 'border-gray-200 opacity-60' : 'border-pink-100'
+                a.status === 'cancelado' ? 'border-stone-200 opacity-60' : 'border-stone-200'
               }`}
             >
               <div>
                 <p className="font-bold">{nomeServico(a.servicoId)}</p>
-                <p className="text-sm text-gray-600 flex items-center gap-1">
+                <p className="text-sm text-stone-600 flex items-center gap-1">
                   <CalendarDays className="w-4 h-4" />
                   {new Date(a.data + 'T00:00:00').toLocaleDateString('pt-BR')} às {a.horario}
                 </p>
-                <p className="text-sm text-gray-600 flex items-center gap-1">
+                <p className="text-sm text-stone-600 flex items-center gap-1">
                   <User className="w-4 h-4" /> {a.clienteNome}
                 </p>
-                <p className="text-sm text-gray-600 flex items-center gap-1">
+                <p className="text-sm text-stone-600 flex items-center gap-1">
                   <Phone className="w-4 h-4" /> {a.clienteTelefone}
                 </p>
                 <span
                   className={`inline-block mt-1 text-xs px-2 py-1 rounded-full ${
                     a.status === 'cancelado'
-                      ? 'bg-gray-200 text-gray-600'
-                      : 'bg-green-100 text-green-700'
+                      ? 'bg-stone-200 text-stone-600'
+                      : 'bg-stone-100 text-stone-700'
                   }`}
                 >
                   {a.status === 'cancelado' ? 'Cancelado' : 'Confirmado'}
@@ -181,14 +174,14 @@ function Agendamentos() {
                 {a.status !== 'cancelado' && (
                   <button
                     onClick={() => handleCancelar(a.id)}
-                    className="bg-yellow-500 text-white px-3 py-2 rounded-lg text-sm"
+                    className="bg-stone-500 text-white px-3 py-2 rounded-lg text-sm hover:bg-stone-600 transition"
                   >
                     Cancelar
                   </button>
                 )}
                 <button
                   onClick={() => handleRemover(a.id)}
-                  className="bg-red-500 text-white px-3 py-2 rounded-lg text-sm flex items-center gap-1"
+                  className="bg-stone-500 text-white px-3 py-2 rounded-lg text-sm flex items-center gap-1 hover:bg-stone-600 transition"
                 >
                   <Trash2 className="w-4 h-4" />
                   Remover
