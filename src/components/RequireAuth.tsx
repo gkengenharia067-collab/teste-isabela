@@ -1,11 +1,11 @@
 import { useState } from 'react'
-import { Lock } from 'lucide-react'
-import { storeConfig } from '../config/store.config'
+import { Lock, Eye, EyeOff } from 'lucide-react'
 import { auth } from '../services/auth.service'
 
 export function RequireAuth({ children }: { children: React.ReactNode }) {
   const [senha, setSenha] = useState('')
   const [erro, setErro] = useState(false)
+  const [mostrarSenha, setMostrarSenha] = useState(false)
 
   if (auth.estaAutenticado()) {
     return (
@@ -41,14 +41,23 @@ export function RequireAuth({ children }: { children: React.ReactNode }) {
         </div>
         <p className="text-sm text-stone-500 mb-6">Digite a senha para acessar o painel administrativo.</p>
         <form onSubmit={handleSubmit}>
-          <input
-            type="password"
-            placeholder="Senha"
-            value={senha}
-            onChange={(e) => setSenha(e.target.value)}
-            className="w-full border border-stone-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-stone-500"
-            autoFocus
-          />
+          <div className="relative">
+            <input
+              type={mostrarSenha ? 'text' : 'password'}
+              placeholder="Senha"
+              value={senha}
+              onChange={(e) => setSenha(e.target.value)}
+              className="w-full border border-stone-300 rounded-lg px-4 py-2 pr-10 focus:outline-none focus:ring-2 focus:ring-stone-500"
+              autoFocus
+            />
+            <button
+              type="button"
+              onClick={() => setMostrarSenha(!mostrarSenha)}
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-stone-500 hover:text-stone-700 transition"
+            >
+              {mostrarSenha ? <EyeOff size={18} /> : <Eye size={18} />}
+            </button>
+          </div>
           {erro && <p className="text-red-500 text-sm mt-2">Senha incorreta</p>}
           <button
             type="submit"
