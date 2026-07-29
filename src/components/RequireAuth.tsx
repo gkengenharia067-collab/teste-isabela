@@ -1,91 +1,63 @@
-import { useState, useEffect } from 'react'
-import { Lock, LogOut } from 'lucide-react'
+import { useState } from 'react'
+import { Lock } from 'lucide-react'
+import { storeConfig } from '../config/store.config'
 import { auth } from '../services/auth.service'
 
 export function RequireAuth({ children }: { children: React.ReactNode }) {
-  // Começa como "null" (ainda não sabemos) para evitar mostrar a tela de
-  // login por uma fração de segundo antes de checar a sessão já existente.
-  const [autenticado, setAutenticado] = useState<boolean | null>(null)
-  const [senhaDigitada, setSenhaDigitada] = useState('')
+  const [senha, setSenha] = useState('')
   const [erro, setErro] = useState(false)
 
-  useEffect(() => {
-    setAutenticado(auth.estaAutenticado())
-  }, [])
+  if (auth.estaAutenticado()) {
+    return (
+      <>
+        {children}
+        <button
+          onClick={() => auth.sair()}
+          className="fixed top-4 right-4 bg-stone-200 text-stone-700 px-3 py-1 rounded text-sm hover:bg-stone-300 transition z-50"
+        >
+          Sair
+        </button>
+      </>
+    )
+  }
 
-  const handleEntrar = (e: React.FormEvent) => {
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
-    const ok = auth.autenticar(senhaDigitada)
-    if (ok) {
-      setAutenticado(true)
+    if (auth.autenticar(senha)) {
       setErro(false)
-      setSenhaDigitada('')
+      window.location.reload()
     } else {
       setErro(true)
+      setSenha('')
     }
   }
 
-  const handleSair = () => {
-    auth.sair()
-    setAutenticado(false)
-  }
-
-  // Ainda checando a sessão — não mostra nada para evitar "piscar" a tela de login.
-  if (autenticado === null) {
-    return null
-  }
-
-  if (!autenticado) {
-    return (
-      <div className="min-h-[60vh] flex items-center justify-center p-6">
-        <form
-          onSubmit={handleEntrar}
-          className="bg-white p-8 rounded-xl shadow-md border border-pink-100 w-full max-w-sm"
-        >
-          <div className="flex items-center gap-2 text-pink-600 mb-4">
-            <Lock className="w-6 h-6" />
-            <h1 className="text-xl font-bold">Área restrita</h1>
-          </div>
-          <p className="text-sm text-gray-600 mb-4">
-            Digite a senha de acesso ao painel administrativo.
-          </p>
+  return (
+    <div className="min-h-screen flex items-center justify-center bg-stone-50">
+      <div className="bg-white p-8 rounded-xl shadow-md border border-stone-200 w-full max-w-sm">
+        <div className="flex items-center gap-2 text-stone-700 mb-4">
+          <Lock className="w-5 h-5" />
+          <h2 className="text-xl font-semibold">Área restrita</h2>
+        </div>
+        <p className="text-sm text-stone-500 mb-6">Digite a senha para acessar o painel administrativo.</p>
+        <form onSubmit={handleSubmit}>
           <input
             type="password"
-            value={senhaDigitada}
-            onChange={(e) => {
-              setSenhaDigitada(e.target.value)
-              setErro(false)
-            }}
-            className={`w-full border rounded-lg p-2 ${erro ? 'border-red-500' : ''}`}
             placeholder="Senha"
+            value={senha}
+            onChange={(e) => setSenha(e.target.value)}
+            className="w-full border border-stone-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-stone-500"
             autoFocus
           />
-          {erro && (
-            <p className="text-red-500 text-sm mt-1">Senha incorreta. Tente novamente.</p>
-          )}
+          {erro && <p className="text-red-500 text-sm mt-2">Senha incorreta</p>}
           <button
             type="submit"
-            className="w-full bg-pink-500 text-white py-2 rounded-lg hover:bg-pink-600 transition mt-4"
+            className="w-full bg-stone-700 text-white py-2 rounded-lg hover:bg-stone-800 transition mt-4"
           >
             Entrar
           </button>
         </form>
       </div>
-    )
-  }
-
-  return (
-    <div>
-      <div className="flex justify-end px-6 pt-4">
-        <button
-          onClick={handleSair}
-          className="inline-flex items-center gap-1 text-sm text-gray-500 hover:text-gray-700 transition"
-        >
-          <LogOut className="w-4 h-4" />
-          Sair
-        </button>
-      </div>
-      {children}
     </div>
   )
 }
