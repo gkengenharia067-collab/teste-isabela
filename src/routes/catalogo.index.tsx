@@ -2,6 +2,7 @@ import { createFileRoute, Link } from '@tanstack/react-router'
 import { useEffect, useState } from 'react'
 import { Sparkles, ArrowLeft } from 'lucide-react'
 import { storageSupabase } from '../services/storage.supabase.service'
+import { auth } from '../services/auth.service'
 
 export const Route = createFileRoute('/catalogo/')({
   component: Catalogo,
@@ -37,10 +38,12 @@ function Catalogo() {
 
   return (
     <div className="p-6 max-w-6xl mx-auto">
-      <Link to="/" className="inline-flex items-center gap-2 text-stone-700 hover:text-stone-900 mb-4 transition">
-        <ArrowLeft className="w-4 h-4" />
-        Voltar ao Dashboard
-      </Link>
+      {auth.estaAutenticado() && (
+  <Link to="/" className="inline-flex items-center gap-2 text-stone-700 hover:text-stone-900 mb-4 transition">
+    <ArrowLeft className="w-4 h-4" />
+    Voltar ao Dashboard
+  </Link>
+)}
 
       <div className="flex items-center gap-2 text-stone-700 mb-4">
         <img src="/vite.svg" alt="" className="w-8 h-8" />
